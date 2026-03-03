@@ -59,6 +59,8 @@ $ScriptDir = if ($MyInvocation.MyCommand.Path) {
     $null
 }
 
+$SourceRoot = $ScriptDir  # tracks repo root (local checkout or temp clone)
+
 $SourceSkillsDir = if ($ScriptDir -and (Test-Path (Join-Path $ScriptDir "skills"))) {
     Join-Path $ScriptDir "skills"
 } else {
@@ -71,6 +73,7 @@ $SourceSkillsDir = if ($ScriptDir -and (Test-Path (Join-Path $ScriptDir "skills"
     $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("ve-skill-" + [guid]::NewGuid().ToString("N").Substring(0, 8))
     git clone --depth 1 $GithubRepo $TempDir 2>$null
     $CleanupTemp = $true
+    $SourceRoot = $TempDir  # point to clone so templates/ is also found
     $candidate = Join-Path $TempDir "skills"
     if (-not (Test-Path $candidate)) {
         Write-Host "Error: Could not find skills/ in cloned repo." -ForegroundColor Red
@@ -166,7 +169,7 @@ foreach ($ag in $SelectedAgents) {
 
         # -WithInstructions: append snippet + copy path-specific files (Copilot only)
         if ($ag -eq "copilot" -and $WithInstructions) {
-            $templatesDir = Join-Path $ScriptDir "templates"
+            $templatesDir = Join-Path $SourceRoot "templates"
             if (Test-Path $templatesDir) {
                 # Append snippet to copilot-instructions.md (idempotent)
                 $copilotInstr = Join-Path $agentDir "copilot-instructions.md"

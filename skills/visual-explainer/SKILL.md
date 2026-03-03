@@ -49,6 +49,7 @@ Route the request using this decision table:
 - Group related elements using subgraphs/boundaries
 - Limit diagrams to 15-20 nodes max; split into focused sub-diagrams if larger
 - For non-technical audiences: add plain-language annotations answering "so what?"
+- Emoji in diagrams: acceptable ONLY in layman-friendly diagrams (explain-simply). Never use emoji in technical/C4 diagrams.
 
 ### 4. Deliver
 
@@ -233,3 +234,36 @@ Load these only when needed to conserve context:
 - `prompts/generate-c4.md` — C4 diagram generation workflow
 - `prompts/explain-simply.md` — Layman-friendly explanation workflow
 - `templates/` — Mermaid/PlantUML starter templates
+
+---
+
+## Quick Examples
+
+### Example: "How does this system work?"
+
+For a Spring Boot + React + PostgreSQL app, the skill would produce:
+
+```mermaid
+C4Context
+    title System Context — Order Management System
+
+    Person(customer, "Online Customer", "Places and tracks orders")
+    Person(admin, "Store Admin", "Manages products and fulfillment")
+
+    System(oms, "Order Management System", "Handles product catalog, cart, checkout, and order tracking")
+
+    System_Ext(stripe, "Stripe", "Payment processing")
+    System_Ext(sendgrid, "SendGrid", "Transactional email delivery")
+    System_Ext(ups, "UPS API", "Shipping rate calculation and tracking")
+
+    Rel(customer, oms, "Browses products, places orders", "HTTPS")
+    Rel(admin, oms, "Manages inventory and orders", "HTTPS")
+    Rel(oms, stripe, "Submits payment charges", "HTTPS/API")
+    Rel(oms, sendgrid, "Sends order confirmations", "HTTPS/API")
+    Rel(oms, ups, "Calculates shipping rates", "HTTPS/API")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
+
+> This is a Level 1 System Context diagram showing who uses the system and what
+> external services it depends on. Ask for a Container diagram to see what's inside.

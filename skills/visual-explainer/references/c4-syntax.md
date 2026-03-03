@@ -59,6 +59,42 @@ C4Container
     UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
+### Component Diagram (Level 3)
+
+> Mermaid C4 supports Component() but layout control is limited.
+> For complex L3 diagrams (>10 components), prefer PlantUML.
+
+```mermaid
+C4Component
+    title Component Diagram — API Application
+
+    Container_Boundary(api, "API Application") {
+        Component(authCtrl, "Auth Controller", "Spring @RestController", "Handles login, signup, token refresh")
+        Component(orderCtrl, "Order Controller", "Spring @RestController", "CRUD operations for orders")
+        Component(authSvc, "Auth Service", "Spring @Service", "Authentication and authorization logic")
+        Component(orderSvc, "Order Service", "Spring @Service", "Order processing business rules")
+        Component(userRepo, "User Repository", "Spring @Repository", "User data access")
+        Component(orderRepo, "Order Repository", "Spring @Repository", "Order data access")
+        Component(eventPub, "Event Publisher", "Spring @Component", "Publishes domain events to queue")
+    }
+
+    ContainerDb(db, "Database", "PostgreSQL", "Stores all persistent data")
+    ContainerQueue(mq, "Message Broker", "RabbitMQ", "Routes async events")
+    System_Ext(idp, "Identity Provider", "Auth0")
+
+    Rel(authCtrl, authSvc, "Delegates to")
+    Rel(orderCtrl, orderSvc, "Delegates to")
+    Rel(authSvc, userRepo, "Reads/writes users")
+    Rel(authSvc, idp, "Validates tokens with", "HTTPS/OIDC")
+    Rel(orderSvc, orderRepo, "Reads/writes orders")
+    Rel(orderSvc, eventPub, "Publishes order events")
+    Rel(userRepo, db, "SQL queries", "JDBC")
+    Rel(orderRepo, db, "SQL queries", "JDBC")
+    Rel(eventPub, mq, "Sends events", "AMQP")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+```
+
 ### Available Mermaid C4 Elements
 
 | Element | Syntax | Use For |

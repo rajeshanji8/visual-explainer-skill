@@ -102,6 +102,7 @@ fi
 
 # --------------- RESOLVE SOURCE ---------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SOURCE_ROOT="${SCRIPT_DIR}"  # tracks repo root (local checkout or temp clone)
 
 if [[ -d "${SCRIPT_DIR}/skills" ]]; then
   SOURCE_SKILLS_DIR="${SCRIPT_DIR}/skills"
@@ -114,6 +115,7 @@ else
   TEMP_DIR="$(mktemp -d)"
   trap 'rm -rf "$TEMP_DIR"' EXIT
   git clone --depth 1 "$GITHUB_REPO" "$TEMP_DIR" 2>/dev/null
+  SOURCE_ROOT="${TEMP_DIR}"  # point to clone so templates/ is also found
   SOURCE_SKILLS_DIR="${TEMP_DIR}/skills"
   if [[ ! -d "$SOURCE_SKILLS_DIR" ]]; then
     echo "Error: Could not find skills/ in cloned repo."
@@ -186,7 +188,7 @@ for agent in "${SELECTED_AGENTS[@]}"; do
 
     # --with-instructions: append snippet + copy path-specific files (Copilot only)
     if [[ "$agent" == "copilot" ]] && $WITH_INSTRUCTIONS; then
-      TEMPLATES_DIR="${SCRIPT_DIR}/templates"
+      TEMPLATES_DIR="${SOURCE_ROOT}/templates"
       if [[ -d "$TEMPLATES_DIR" ]]; then
         # Append snippet to copilot-instructions.md (idempotent — skip if markers already present)
         COPILOT_INSTR="${AGENT_DIR}/copilot-instructions.md"
