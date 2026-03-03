@@ -1,0 +1,31 @@
+%% C4 Container Diagram Template
+%% Replace bracketed placeholders with actual values
+%% Keep to ≤15 nodes; split into sub-diagrams if larger
+
+C4Container
+    title Container Diagram — [System Name]
+
+    Person(user, "[Primary User Role]", "[What they do]")
+
+    System_Boundary(boundary, "[System Name]") {
+        Container(web, "[Web Application]", "[Framework, Language]", "[User-facing responsibility]")
+        Container(api, "[API Server]", "[Framework, Language]", "[Backend responsibility]")
+        Container(worker, "[Background Worker]", "[Framework, Language]", "[Async processing responsibility]")
+        ContainerDb(db, "[Primary Database]", "[DB Technology]", "[What data it stores]")
+        ContainerDb(cache, "[Cache]", "[Cache Technology]", "[What it caches and why]")
+        ContainerQueue(queue, "[Message Queue]", "[Queue Technology]", "[What messages it carries]")
+    }
+
+    System_Ext(ext1, "[External Service 1]", "[Purpose]")
+    System_Ext(ext2, "[External Service 2]", "[Purpose]")
+
+    Rel(user, web, "[User action]", "HTTPS")
+    Rel(web, api, "[What the frontend requests]", "HTTPS/JSON")
+    Rel(api, db, "[Reads/writes what]", "TCP/SQL")
+    Rel(api, cache, "[Caches what]", "[Protocol]")
+    Rel(api, queue, "[Publishes what events/commands]", "AMQP")
+    Rel(queue, worker, "[Delivers what tasks]", "AMQP")
+    Rel(worker, ext1, "[What it sends externally]", "HTTPS")
+    Rel(api, ext2, "[Integration purpose]", "HTTPS")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")

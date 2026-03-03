@@ -1,0 +1,21 @@
+%% C4 System Context Diagram Template
+%% Replace bracketed placeholders with actual values
+%% Keep to ≤8 nodes for readability
+
+C4Context
+    title System Context — [System Name]
+
+    Person(user, "[Primary User Role]", "[What they do with the system]")
+    Person(admin, "[Admin Role]", "[Administrative responsibilities]")
+
+    System(system, "[System Name]", "[One-sentence system purpose]")
+
+    System_Ext(ext1, "[External System 1]", "[What it provides]")
+    System_Ext(ext2, "[External System 2]", "[What it provides]")
+
+    Rel(user, system, "[Action user takes]", "[Protocol]")
+    Rel(admin, system, "[Admin action]", "[Protocol]")
+    Rel(system, ext1, "[What is sent/received]", "[Protocol]")
+    Rel(system, ext2, "[What is sent/received]", "[Protocol]")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")

@@ -1,0 +1,43 @@
+%% Sequence Diagram Template — API Request Flow
+%% Replace bracketed placeholders with actual values
+%% Keep to ≤12 participants for readability
+
+sequenceDiagram
+    autonumber
+    title [Flow Name] — [System Name]
+
+    actor User as [User Role]
+    participant UI as [Frontend App]
+    participant GW as [API Gateway / Load Balancer]
+    participant API as [API Server]
+    participant Auth as [Auth Service]
+    participant SVC as [Business Service]
+    participant DB as [Database]
+    participant Q as [Message Queue]
+    participant Worker as [Background Worker]
+
+    User->>UI: [User action — e.g., Clicks "Place Order"]
+    UI->>GW: [HTTP method + endpoint — e.g., POST /api/orders]
+    GW->>API: [Forwards request]
+
+    API->>Auth: [Validates token/session]
+    Auth-->>API: [Auth result — e.g., User authenticated]
+
+    API->>SVC: [Business operation — e.g., processOrder(orderData)]
+
+    alt [Happy Path]
+        SVC->>DB: [Data operation — e.g., INSERT order record]
+        DB-->>SVC: [Result — e.g., Order saved, ID: 12345]
+        SVC->>Q: [Async event — e.g., Publish OrderCreated event]
+        SVC-->>API: [Success response — e.g., Order confirmed]
+        API-->>UI: [HTTP response — e.g., 201 Created + order details]
+        UI-->>User: [UI feedback — e.g., Shows order confirmation]
+
+        Note over Q,Worker: Async processing
+        Q->>Worker: [Task delivery — e.g., Process payment]
+        Worker->>DB: [Update — e.g., Update order status to "paid"]
+    else [Error Path]
+        SVC-->>API: [Error — e.g., Insufficient inventory]
+        API-->>UI: [HTTP error — e.g., 409 Conflict]
+        UI-->>User: [Error feedback — e.g., Shows "Out of stock" message]
+    end
